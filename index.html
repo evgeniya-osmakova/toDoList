@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script src="https://unpkg.com/vuex@2.0.0"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <header>
+        <p>To-Do List</p>
+    </header>
+
+    <main>
+        <div class="add" v-if="store.state.state === 'start'">
+            <p v-on:click="loadCards" class="add_text load">Load To-Do List</p>
+        </div>
+        <div v-if="store.state.state !== 'start'">
+
+            <div class="cardsList">
+                <div class="cards" v-for="{ task, done, id } in cards">
+                    <div class="card form_color">
+                        <form class="form" v-on:submit="sendResponse($event)" method="POST" action="">
+                            <div class="form_fields">
+                                <div hidden>
+                                    <input type="text" v-bind:value="id" name="id" hidden>
+                                </div>
+                                <div class="done">
+                                    <label class="done_text" for="done">Done</label>
+                                    <input id="done" class="form_input" type="checkbox" v-bind:checked="done" name="done">
+                                </div>
+                                <textarea class="form_textarea" v-model="task" name="task"></textarea>
+                            </div>
+                            <div class="btn_group">
+                                <input id='save' class="btn" type="submit" name="add" value="Save" />
+                                <input id='delete' class="btn btn_red" type="submit" name="delete" value="Delete" />
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="add" v-if="store.state.state === 'canAdd'">
+                <p class="add_text load" v-on:click="addCard()">Add new task</p>
+            </div>
+        </div>
+    </main>
+</div>
+<script>
+  //path to the server
+  const path = 'https://my-django-backend.herokuapp.com/tasks';
+
+  //init vues store
+  const store = new Vuex.Store({
+    state: {
+      cards: [],
+      state: 'start',
+    },
+    actions: {
+      //load cards from server
+      loadCards({ commit }) {
+        axios.get(path).then(({ data }) => commit('refreshCards', data));
+      },
+    },
+    mutations: {
+      //add new empty card
+      addCard(state) {
+        state.cards.push({id: '', header: '', description: ''});
+      },
+      //change state status: 'start', 'canAdd' or 'cantAdd'
+      changeState (state, value) {
+        state.state = value;
+      },
+      //refresh cards on the page
+      refreshCards (state, cards) {
+        const cardsData = cards.map((card) => {
+          const { task, done } = card.fields;
+          const { pk: id } = card.pk;
+          return { task, done, id: 2 };
+        });
+        console.log(cardsData);
+        Vue.set(state, 'cards', cardsData);
+        state.state = 'canAdd';
+      },
+    }
+  });
+
+  //init new vue instance
+  const app = new Vue({
+    el: '#app',
+    methods: {
+      //init cards loading from server in Vuex
+      loadCards() {
+        store.dispatch('loadCards');
+      },
+      //init new empty card adding in Vuex
+      addCard() {
+        if (store.state.state === 'canAdd') {
+          store.commit('addCard');
+          store.commit('changeState', 'cantAdd');
+        }
+      },
+      //sending changes to the server
+      sendResponse(e) {
+        e.preventDefault();
+        const action = e.submitter.id;
+        const formData = new FormData(e.target);
+        const [id, header, description] = [...formData.values()]
+        async function send() {
+          try {
+            if (action === 'save') {
+              if (id) {
+                await axios.put(path, { id, header, description });
+              } else {
+                await axios.post(path, { header, description });
+              }
+            } else {
+              await axios.delete(`${path}${id}`);
+            }
+            store.commit('changeState', 'canAdd');
+            store.dispatch('loadCards');
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        send();
+      },
+    },
+    computed: {
+      //loads cards array from Vuex store
+      cards() {
+        return store.state.cards;
+      },
+    }
+  });
+</script>
+</body>
+</html>

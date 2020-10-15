@@ -1,0 +1,120 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #8c8c8c;
+}
+
+header {
+    height: 50px;
+    background: #d9d9d9;
+    color: #8c8c8c;
+}
+
+header p {
+    font-size: 24px;
+    font-weight: bold;
+    padding-left: 50px;
+    padding-top: 10px;
+}
+
+.card {
+    width: 600px;
+}
+
+.cardsList {
+    padding-top: 100px;
+}
+
+.cards {
+    padding-left: 50px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form_fields {
+    padding: 10px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.btn {
+      background-color: #4CAF50;
+      color: white;
+      margin-left: 10px;
+      border: solid;
+      border-color: transparent;
+      cursor: pointer;
+      width: 100%;
+      border-radius: 10px;
+      font-weight: bold;
+      width: 70px;
+}
+
+textarea {
+    width: 500px;
+}
+
+
+.btn_red {
+    background: #ff8470;
+}
+
+.btn:hover {
+    border-color: white;
+}
+
+.form_textarea {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.add {
+    padding-top: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.add_text {
+    color: white;
+    font-size: 24px;
+}
+
+.btn_group {
+    display: flex;
+    gap: 5px;
+}
+
+.load:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.done {
+    display: flex;
+    flex-direction: column;
+}
+
+.done_text {
+    font-size: 12px;
+}
+
+input {
+    width:35px;
+    height:35px;
+}
+
+textarea {
+    height:35px;
+}
